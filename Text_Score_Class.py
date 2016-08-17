@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2016/8/17 10:07
+# @Author  : LuFeng
 import csv
 import numpy as np
 from Load_Data_Class import Load_Sentiment_Dict
@@ -36,6 +40,8 @@ class Text_Score():
 
         self.sentiment_stopwords = Data_Load.get_txt_data('D:/project_reviews_analysis/Preprocessing module/sentiment_stopword.txt',
                                            'lines')
+
+    #为情感词赋予程度副词的权重
     def match(self,word, sentiment_value):
         if word in self.mostdict:
             sentiment_value *= 2.0
@@ -51,6 +57,7 @@ class Text_Score():
             sentiment_value *= -1
         return sentiment_value
 
+    #将分数转化为正
     def transform_to_positive_num(self,poscount, negcount):
         pos_count = 0
         neg_count = 0
@@ -68,6 +75,7 @@ class Text_Score():
             neg_count = negcount
         return [pos_count, neg_count]
 
+    #为整个长句打分
     def sentence_sentiment_score(self,file):
         '''reader = csv.reader(open(file, 'r'))
         cuted_review = []
@@ -124,7 +132,7 @@ class Text_Score():
         return all_review_count
 
 
-
+    #为单个分句打分
     def seg_sentence_sentiment_score(self, source):
 
         # 输入需要随着不同格式的文件而转变
@@ -167,8 +175,7 @@ class Text_Score():
             # print(all_review_count)
         return output
 
-
-
+    #得到每条评论综合得分
     def all_review_sentiment_score(self,senti_score_list):
         score = []
         for review in senti_score_list:
@@ -185,7 +192,7 @@ class Text_Score():
             score.append([Pos, Neg, AvgPos, AvgNeg, StdPos, StdNeg])
         return score
 
-
+    #存储得分并输出
     def store_sentiment_dictionary_score(self):
         sentiment_score = self.all_review_sentiment_score(self.sentence_sentiment_score(self.rawdata_file))
 
@@ -193,7 +200,7 @@ class Text_Score():
         for i in sentiment_score:
             f.writerow((str(i[0]), str(i[1]), str(i[2]), str(i[3]), str(i[4]), str(i[5])))
 
-
+    #得到每条评论分词结果并存储
     def get_seg_output(self):
         reader = csv.reader(open(self.rawdata_file, 'r'))
         cuted_review = []

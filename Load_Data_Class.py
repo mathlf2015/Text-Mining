@@ -1,7 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2016/8/17 10:07
+# @Author  : LuFeng
 import os
 import jieba
-
-
+import csv
+import pandas as pd
 
 class Load_Sentiment_Dict():
     def __init__(self):
@@ -53,6 +57,7 @@ class Load_Sentiment_Dict():
 
 
 
+
 class Text_Processing():
     def __init__(self):
         jieba.load_userdict('D:/project_reviews_analysis/usr_dict.txt')
@@ -91,4 +96,11 @@ class Text_Processing():
             for w in seg_list2:
                 seg_result2.append(w)
             return seg_result2
+
+    def file_to_input(self, file_input, file_output):
+        writer = csv.writer(open(file_output, 'w'), lineterminator='\n')
+        df = pd.read_csv(file_input, encoding='gbk')
+        output = df['Review'].unique()
+        for idx, line in enumerate(output):
+            writer.writerow((idx + 1, line))
 

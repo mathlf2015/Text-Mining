@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2016/8/17 10:07
+# @Author  : LuFeng
 import csv
 from Load_Data_Class import Text_Processing
 import pymssql
@@ -34,14 +38,15 @@ class Concernword_Analysis():
         cuted_review = []
         source = []
         index_output = []
-
-        # for cell in reader:
-        #     if len(cell[1]) != 0:  # 去除空评论
-        #         cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+        descriptors = []
 
         for cell in reader:
-            if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
-                cuted_review.append(self.tp.cut_sentence_2(cell[0]))
+            if len(cell[1]) != 0:  # 去除空评论
+                cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+
+        # for cell in reader:
+        #     if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
+        #         cuted_review.append(self.tp.cut_sentence_2(cell[0]))
 
         # 得到关注点索引，和包含关注点的分句
         for idx, review in enumerate(cuted_review):
@@ -51,13 +56,14 @@ class Concernword_Analysis():
                     if word in concernword_dict[keyword]:
                         index_output.append(idx)
                         source.append(sent)
+                        descriptors.append(word) #输出增加描述词
 
         #print(source)
         #print(sorted(list(set(index_output))))
         # 去除重复排序后输出
         # return sorted(list(set(index_output))),source
         # 不去除重复，不排序
-        return index_output,source
+        return index_output,source,descriptors
 
 
     #字符串匹配得到关注点相关的评论索引，及包含关注点的分句
@@ -66,15 +72,17 @@ class Concernword_Analysis():
         reader = csv.reader(open(self.file_raw_data, 'r'))
         cuted_review = []
         source = []
-
-        # for cell in reader:
-        #     if len(cell[1]) != 0:  # 去除空评论
-        #         cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+        descriptors = []
+        index_output = []
 
         for cell in reader:
-            if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
-                cuted_review.append(self.tp.cut_sentence_2(cell[0]))
-        index_output = []
+            if len(cell[1]) != 0:  # 去除空评论
+                cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+
+        # for cell in reader:
+        #     if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
+        #         cuted_review.append(self.tp.cut_sentence_2(cell[0]))
+
 
         # 得到关注点索引，和包含关注点的分句
         for idx, review in enumerate(cuted_review):
@@ -83,13 +91,14 @@ class Concernword_Analysis():
                     if sent.find(concernword) != -1:
                         index_output.append(idx)
                         source.append(sent)
+                        descriptors.append(concernword)
         #print(source)
         #print(sorted(list(set(index_output))))
 
         #去除重复排序后输出
         # return sorted(list(set(index_output))),source
         #不去除重复，不排序
-        return index_output, source
+        return index_output, source,descriptors
 
 
 
@@ -97,12 +106,13 @@ class Concernword_Analysis():
         concernword_dict = self.get_my_concernword()
         ind_dict = {}
         source ={}
+        descriptor_dict ={}
         for i in concernword_dict.keys():
             if self.style == 'seg':
-                output,seg_output = self.get_index_seg(i)
+                output,seg_output,descriptor = self.get_index_seg(i)
 
             elif self.style == 'str':
-                output,seg_output = self.get_index_str(i)
+                output,seg_output,descriptor = self.get_index_str(i)
 
             if len(output) != 0:
                 if i not in ind_dict:
@@ -116,15 +126,21 @@ class Concernword_Analysis():
                     source[i].extend(seg_output)
                 else:
                     source[i].extend(seg_output)
+            if len(descriptor) != 0:
+                if i not in descriptor_dict:
+                    descriptor_dict[i] = []
+                    descriptor_dict[i].extend(descriptor)
+                else:
+                    descriptor_dict[i].extend(descriptor)
         # print(source)
         # print(ind_dict)
-        return ind_dict,source
+        return ind_dict,source,descriptor_dict
 
 
     # 关注点综合分析，及存储
     def get_concernword_analysis(self):
         valid_views = []
-        ind_dict,source = self.get_ind_dict()
+        ind_dict,source = self.get_ind_dict()[0],self.get_ind_dict()[1]
         for i in ind_dict.keys():
             valid_views.extend(ind_dict[i])
 
