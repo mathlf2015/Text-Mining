@@ -208,7 +208,6 @@ class Text_Score():
             if len(cell[1]) != 0:
                 cuted_review.append(self.tp.cut_sentence_2(cell[1]))
 
-                
         writer =csv.writer(open(self.seg_file,'w'),lineterminator='\n')
         for review in cuted_review:
             temp = []

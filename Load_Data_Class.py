@@ -7,6 +7,7 @@ import jieba
 import csv
 import pandas as pd
 
+#导入情感词典
 class Load_Sentiment_Dict():
     def __init__(self):
         jieba.load_userdict('D:/project_reviews_analysis/usr_dict.txt')
@@ -57,11 +58,12 @@ class Load_Sentiment_Dict():
 
 
 
-
+#文本预处理
 class Text_Processing():
     def __init__(self):
         jieba.load_userdict('D:/project_reviews_analysis/usr_dict.txt')
-        
+
+    #以标点切分成分句
     def cut_sentence_2(self,words):
         # words = (words).decode('utf8')
         start = 0
@@ -85,6 +87,7 @@ class Text_Processing():
             sents.append(words[start:])
         return sents
 
+    #对句子分词
     def segmentation(self,sentence, para):
         if para == 'str':
             seg_list = jieba.cut(sentence)
@@ -97,6 +100,7 @@ class Text_Processing():
                 seg_result2.append(w)
             return seg_result2
 
+    #去重
     def file_to_input(self, file_input, file_output):
         writer = csv.writer(open(file_output, 'w'), lineterminator='\n')
         df = pd.read_csv(file_input, encoding='gbk')

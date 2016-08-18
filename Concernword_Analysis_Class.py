@@ -101,7 +101,7 @@ class Concernword_Analysis():
         return index_output, source,descriptors
 
 
-
+    #输出关注点每个类别下的评论索引，分句，二级描述词
     def get_ind_dict(self):
         concernword_dict = self.get_my_concernword()
         ind_dict = {}

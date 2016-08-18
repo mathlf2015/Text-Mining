@@ -122,7 +122,8 @@ class Sentiment_seg():
 
         # return output
 
+
 # input_transform = Text_Processing()
 # input_transform.file_to_input(r'C:\Users\Data\Desktop\高露洁_ForJack.csv','C:/Users/Data/Desktop/source.csv')
-for_test = Sentiment_seg('C:/Users/Data/Desktop/score_for_quency.csv',r'C:\Users\Data\Desktop\source.csv','seg','C:/Users/Data/Desktop/input_for_quency_final.csv')
-for_test.get_sentiment_seg()
+# for_test = Sentiment_seg('C:/Users/Data/Desktop/score_for_quency.csv',r'C:\Users\Data\Desktop\source.csv','seg','C:/Users/Data/Desktop/input_for_quency_final.csv')
+# for_test.get_sentiment_seg()
