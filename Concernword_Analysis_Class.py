@@ -40,13 +40,14 @@ class Concernword_Analysis():
         index_output = []
         descriptors = []
 
-        for cell in reader:
-            if len(cell[1]) != 0:  # 去除空评论
-                cuted_review.append(self.tp.cut_sentence_2(cell[1]))
-
         # for cell in reader:
-        #     if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
-        #         cuted_review.append(self.tp.cut_sentence_2(cell[0]))
+        #     if len(cell[1]) != 0:  # 去除空评论
+        #         cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+
+        # cell的索引和输入文件格式有关
+        for cell in reader:
+            if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:
+                cuted_review.append(self.tp.cut_sentence_2(cell[0]))
 
         # 得到关注点索引，和包含关注点的分句
         for idx, review in enumerate(cuted_review):
@@ -75,9 +76,11 @@ class Concernword_Analysis():
         descriptors = []
         index_output = []
 
+        # cell的索引和输入文件格式有关
+        reader.__next__()
         for cell in reader:
-            if len(cell[1]) != 0:  # 去除空评论
-                cuted_review.append(self.tp.cut_sentence_2(cell[1]))
+            if len(cell[0]) != 0:  # 去除空评论
+                cuted_review.append(self.tp.cut_sentence_2(cell[0]))
 
         # for cell in reader:
         #     if cell != ['Review', 'Crawler_Time', 'sku信息', 'Key_Word', '商品ID', '评论标签', '评论时间']:

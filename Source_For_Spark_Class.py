@@ -7,6 +7,7 @@ import pandas as pd
 from Load_Data_Class import Text_Processing
 import csv
 from Text_Score_Class import Text_Score
+import time
 
 class Sentiment_seg():
 
@@ -44,7 +45,9 @@ class Sentiment_seg():
     def get_sentiment_idx_for_seg_review(self):
         test_concernword = Concernword_Analysis(self.style, self.rawdata_name)
         ind_dict,source,descriptors = test_concernword.get_ind_dict()
+        # print(ind_dict,source,descriptors)
         temp = self.get_score.seg_sentence_sentiment_score(source)
+        # print(temp)
         result = {}
         for keyword in ind_dict:
             result[keyword] = {}
@@ -65,7 +68,7 @@ class Sentiment_seg():
         test_concernword = Concernword_Analysis(self.style, self.rawdata_name, 'D:/no_need_1.csv', 'D:/no_need_2.csv')
         concernword_dict = test_concernword.get_my_concernword()
         dic_for_partition = self.get_sentiment_idx_for_seg_review()
-        rawdata = pd.read_csv(self.rawdata_name, encoding='gbk',header=None)
+        rawdata = pd.read_csv(self.rawdata_name, encoding='gbk')
         #print(rawdata)
         #print(dic_for_partition['物流'])
         output = {}
@@ -83,8 +86,8 @@ class Sentiment_seg():
             for i in dic_for_partition[keyword]['neg']:
                 # print(tp.cut_sentence_2(rawdata.ix[i,1]))
                 #去重
-                if self.tp.cut_sentence_2(rawdata.ix[i, 1]) not in temp_neg:
-                    temp_neg.append(self.tp.cut_sentence_2(rawdata.ix[i, 1]))
+                if self.tp.cut_sentence_2(rawdata.ix[i, 0]) not in temp_neg:
+                    temp_neg.append(self.tp.cut_sentence_2(rawdata.ix[i, 0])) # rawdata的索引和输入文件格式有关
 
 
             for idx, review in enumerate(temp_neg):
@@ -99,8 +102,8 @@ class Sentiment_seg():
             for i in dic_for_partition[keyword]['pos']:
                 # print(tp.cut_sentence_2(rawdata.ix[i,1]))
                 #去重
-                if self.tp.cut_sentence_2(rawdata.ix[i, 1]) not in temp_pos:
-                    temp_pos.append(self.tp.cut_sentence_2(rawdata.ix[i, 1]))
+                if self.tp.cut_sentence_2(rawdata.ix[i, 0]) not in temp_pos:
+                    temp_pos.append(self.tp.cut_sentence_2(rawdata.ix[i, 0]))
 
             for idx, review in enumerate(temp_pos):
                 for sent in review:
@@ -109,7 +112,9 @@ class Sentiment_seg():
                             output[keyword]['pos'].append(sent)
                             output[keyword]['pos_seg'].append(review)
                             output[keyword]['pos_descriptor'].append(concernword)
+        return output
 
+    def save_csv(self,output):
         #写入csv输出
         writer = csv.writer(open(self.output_for_spark,'w'),lineterminator='\n')
         for keyword in output:
@@ -120,10 +125,33 @@ class Sentiment_seg():
         # print(pd.DataFrame(output))
         # pd.DataFrame(output).to_csv('D:/need_1.csv')
 
-        # return output
+    # 对打完分分好类的关注点词频进行统计
+    def sentimented_seg_concernword_analysis(self,output,top_num=5):
+        pos_set =[]
+        neg_set =[]
+        for keyword in output:
+            pos_set.append([keyword,len(output[keyword]['pos'])])
+            neg_set.append([keyword,len(output[keyword]['neg'])])
+        pos_set = sorted(pos_set,key=lambda x: x[1],reverse=True)
+        neg_set = sorted(neg_set,key=lambda x: x[1],reverse=True)
+        pos_sum = sum([x[1] for x in pos_set])
+        neg_sum = sum([x[1] for x in neg_set])
+        for i in pos_set[:top_num]:
+            print('%s: %d,%.4f'%(i[0],i[1],i[1]/pos_sum))
+        print('neg')
+        for i in neg_set[:top_num]:
+            print('%s: %d,%.4f'%(i[0],i[1],i[1]/neg_sum))
+
+
 
 
 # input_transform = Text_Processing()
 # input_transform.file_to_input(r'C:\Users\Data\Desktop\高露洁_ForJack.csv','C:/Users/Data/Desktop/source.csv')
-# for_test = Sentiment_seg('C:/Users/Data/Desktop/score_for_quency.csv',r'C:\Users\Data\Desktop\source.csv','seg','C:/Users/Data/Desktop/input_for_quency_final.csv')
-# for_test.get_sentiment_seg()
+t1 = time.time()
+for_test = Sentiment_seg('C:/Users/Data/Desktop/score_for_quency.csv',r'C:\Users\Data\Desktop\高露洁_ForJack.csv','seg','C:/Users/Data/Desktop/input_for_quency_final.csv')
+output = for_test.get_sentiment_seg()
+# print(output)
+for_test.save_csv(output)
+for_test.sentimented_seg_concernword_analysis(output)
+t2 = time.time()
+print('消耗时间%d'%(t2-t1))
