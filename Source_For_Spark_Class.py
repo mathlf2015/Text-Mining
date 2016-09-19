@@ -65,7 +65,7 @@ class Sentiment_seg():
 
     #得到每个关注点下正负情感的索引（对单个分句而言）
     def get_sentiment_idx_for_seg_review(self):
-        test_concernword = Concernword_Analysis(self.style,review_id_end=self.reviewid_end)
+        test_concernword = Concernword_Analysis(self.style,review_id_beg=self.reviewid_beg,review_id_end=self.reviewid_end)
         ind_dict,source,descriptors = test_concernword.get_ind_dict()
         # print(ind_dict,source,descriptors)
         temp = self.get_score.seg_sentence_sentiment_score(source)
