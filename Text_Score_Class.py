@@ -126,15 +126,21 @@ class Text_Score():
                 negcount = 0
                 for word in seg_sent:
                     if word in self.postdict:
+                        score = 1
                         # poscount += 1
                         for w in seg_sent[a:i]:
-                            poscount += self.match(w, 1)
+                            # poscount += self.match(w, 1)
+                            score *=self.match(w,1)
+                        poscount +=score
                         a = i + 1
 
                     elif word in self.negdict:
+                        score = 1
                         # negcount += 1
                         for w in seg_sent[a:i]:
-                            negcount += self.match(w, 1)
+                            # negcount += self.match(w, 1)
+                            score *=self.match(w,1)
+                        negcount +=score
                         a = i + 1
 
                     elif word == '！' or word == '!':
@@ -173,15 +179,21 @@ class Text_Score():
                 negcount = 0
                 for word in seg_sent:
                     if word in self.postdict:
+                        score = 1
                         # poscount += 1
                         for w in seg_sent[a:i]:
-                            poscount += self.match(w, 1)
+                            # poscount += self.match(w, 1)
+                            score *=self.match(w,1)
+                        poscount +=score
                         a = i + 1
 
                     elif word in self.negdict:
+                        score = 1
                         # negcount += 1
                         for w in seg_sent[a:i]:
-                            negcount += self.match(w, 1)
+                            # negcount += self.match(w, 1)
+                            score *=self.match(w,1)
+                        negcount +=score
                         a = i + 1
 
                     elif word == '！' or word == '!':
